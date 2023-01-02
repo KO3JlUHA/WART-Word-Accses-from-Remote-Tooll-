@@ -12,6 +12,7 @@ def handle_input(victim_socket: socket.socket):
             functions.recreate_mouse_movement(pos=data[1:])
 
 
+
 def main():
     victim_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     ip_to_connect = ('127.0.0.1', 4200)

